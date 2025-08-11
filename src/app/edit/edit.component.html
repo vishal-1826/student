@@ -1,7 +1,3 @@
-
-<h2 class="h2">Student Form</h2>
-
-
 <form class="form ml-5" [formGroup]="studentForm" (ngSubmit)="onSubmit()">
 
   <label>Name:</label>
@@ -34,38 +30,5 @@
     Enter 10-digit phone number
   </div>
 
-  <button class="submit" type="submit">Submit</button>
+  <button class="submit" type="submit">Update</button>
 </form>
-
-<br />
-
-
-<h2>Student List</h2>
-
-<table border="1" style="width: 100%; text-align: left;">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>ID</th>
-      <th>Roll No</th>
-      <th>Email</th>
-      <th>Phone Number</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let student of students">
-      <td>{{ student.Name }}</td>
-      <td>{{ student.id }}</td>
-      <td>{{ student.RollNo }}</td>
-      <td>{{ student.EmailId }}</td>
-      <td>{{ student.PhoneNumber }}</td>
-      <td>
-        <button (click)="updateStudent(+student.id)">Edit</button>
-        <button (click)="onDelete(+student.id)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<app-edit *ngIf="isEditMode"></app-edit>

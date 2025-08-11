@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule,FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StudentServiceService } from './student-service.service';
-
+import { Router, RouterOutlet } from '@angular/router';
+import { EditComponent } from './edit/edit.component';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-root',
+  standalone: true,
+    imports: [CommonModule, RouterOutlet,ReactiveFormsModule,EditComponent],
   templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   studentForm!: FormGroup;
@@ -13,7 +18,7 @@ export class AppComponent implements OnInit {
   isEditMode!: boolean;
   currentEditId!: number;
 
-  constructor(private fb: FormBuilder, private student: StudentServiceService) { }
+  constructor(private fb: FormBuilder, private student: StudentServiceService, private router:Router) { }
 
   ngOnInit(): void {
     this.studentForm = this.fb.group({
@@ -28,20 +33,7 @@ export class AppComponent implements OnInit {
 
  onSubmit() {
   if (this.studentForm.valid) {
-    const formData = this.studentForm.value;
-
-    if (this.isEditMode && this.currentEditId !== null) {
-      // UPDATE
-      this.student.updateStudent(this.currentEditId, formData).subscribe(() => {
-        console.log('✅ Student updated:', formData);
-        this.getStudents();
-        this.studentForm.reset();
-        this.isEditMode = false;
-        this.currentEditId = 0;
-      }, error => {
-        console.error('❌ Error updating student:', error);
-      });
-    } else {
+    const formData = this.studentForm.value; {
       // ADD
       this.student.addStudent(formData).subscribe(() => {
         console.log('✅ Student added:', formData);
@@ -58,8 +50,13 @@ export class AppComponent implements OnInit {
   onDelete(id: number) {
     const index = this.students.findIndex(s => s.id === +id);
     if (index > -1) {
-      this.students.splice(index, 1);
-      alert(`Student with ID ${id} deleted.`);
+      
+      this.student.deleteStudent(id).subscribe(()=>{
+       
+        this.students.splice(index, 1);
+        alert(`Student with ID ${id} deleted.`); 
+      })
+      
     } else {
       alert(`Student with ID ${id} not found.`);
     }
@@ -68,7 +65,6 @@ export class AppComponent implements OnInit {
   getStudents() {
     this.student.getStudents().subscribe((data: any) => {
       this.students = data;
-      console.log('✅ Students fetched:', this.students);
     }, error => {
       console.error('❌ Error fetching students:', error);
     });
@@ -76,20 +72,23 @@ export class AppComponent implements OnInit {
 
  
 updateStudent(id: number) {
-  const student = this.students.find(s => s.id === id);
-  if (student) {
-    this.isEditMode = true;
-    this.currentEditId = id;
+  this.isEditMode = true;
+  this.router.navigate(['edit', id]);
 
-    this.studentForm.patchValue({
-      Name: student.Name,
-      id: student.id,
-      RollNo: student.RollNo,
-      EmailId: student.EmailId,
-      PhoneNumber: student.PhoneNumber
-    });
+  // const student = this.students.find(s => s.id === id);
+  // if (student) {
+  //   this.isEditMode = true;
+  //   this.currentEditId = id;
+
+  //   this.studentForm.patchValue({
+  //     Name: student.Name,
+  //     id: student.id,
+  //     RollNo: student.RollNo,
+  //     EmailId: student.EmailId,
+  //     PhoneNumber: student.PhoneNumber
+  //   });
   }
 }
 
 
-}
+
