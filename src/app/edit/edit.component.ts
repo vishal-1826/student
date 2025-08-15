@@ -56,9 +56,10 @@ export class EditComponent implements OnInit {
       // UPDATE
       this.student.updateStudent(this.currentEditId, formData).subscribe(() => {
         console.log('✅ Student updated:', formData, this.currentEditId);
-         this.getStudents();
-         this.studentForm.reset();
-        this.router.navigate(['']); // Navigate back to main list after update
+        this.student.notifyStudentChange(); // Notify other components about the change
+         
+        this.router.navigate(['/']); // Navigate back to main list after update
+        this.studentForm.reset();
       });
     }
   }

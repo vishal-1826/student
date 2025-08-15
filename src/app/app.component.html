@@ -1,44 +1,9 @@
+ <div class="mb-2">
+  <button class="btn btn-primary" (click)="addStudent()">Add Student</button>
+ </div>
 
-<h2 class="h2">Student Form</h2>
 
-
-<form class="form ml-5" [formGroup]="studentForm" (ngSubmit)="onSubmit()">
-
-  <label>Name:</label>
-  <input formControlName="Name" />
-  <div class="error" *ngIf="studentForm.get('Name')?.invalid && studentForm.get('Name')?.touched">
-    Name is required
-  </div>
-
-  <label>ID:</label>
-  <input formControlName="id" />
-  <div class="error" *ngIf="studentForm.get('id')?.invalid && studentForm.get('id')?.touched">
-    Valid ID is required
-  </div>
-
-  <label>Roll No:</label>
-  <input formControlName="RollNo" />
-  <div class="error" *ngIf="studentForm.get('RollNo')?.invalid && studentForm.get('RollNo')?.touched">
-    Roll No is required
-  </div>
-
-  <label>Email:</label>
-  <input formControlName="EmailId" />
-  <div class="error" *ngIf="studentForm.get('EmailId')?.invalid && studentForm.get('EmailId')?.touched">
-    Enter valid email
-  </div>
-
-  <label>Phone Number:</label>
-  <input formControlName="PhoneNumber" />
-  <div class="error" *ngIf="studentForm.get('PhoneNumber')?.invalid && studentForm.get('PhoneNumber')?.touched">
-    Enter 10-digit phone number
-  </div>
-
-  <button class="submit" type="submit">Submit</button>
-</form>
-
-<br />
-
+  <router-outlet></router-outlet>
 
 <h2>Student List</h2>
 
@@ -54,18 +19,19 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let student of students">
+    <tr *ngFor="let student of students; trackBy: trackById">
       <td>{{ student.Name }}</td>
       <td>{{ student.id }}</td>
       <td>{{ student.RollNo }}</td>
       <td>{{ student.EmailId }}</td>
       <td>{{ student.PhoneNumber }}</td>
       <td>
-        <button (click)="updateStudent(+student.id)">Edit</button>
-        <button (click)="onDelete(+student.id)">Delete</button>
+        
+        <button (click)="updateStudent(+student.id)"><i class="fas fa-edit"></i></button>
+        <button (click)="onDelete(+student.id)"><i class="fas fa-trash"></i></button>
+        
       </td>
     </tr>
   </tbody>
 </table>
 
-<app-edit *ngIf="isEditMode"></app-edit>

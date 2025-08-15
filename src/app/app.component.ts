@@ -3,7 +3,8 @@ import { ReactiveFormsModule,FormBuilder, FormGroup, Validators } from '@angular
 import { StudentServiceService } from './student-service.service';
 import { Router, RouterOutlet } from '@angular/router';
 import { EditComponent } from './edit/edit.component';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
+import { startWith } from 'rxjs';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -12,40 +13,23 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+  title(title: any) {
+    throw new Error('Method not implemented.');
+  }
   studentForm!: FormGroup;
-
   students: any[] = []; // Array to hold student data
   isEditMode!: boolean;
   currentEditId!: number;
 
-  constructor(private fb: FormBuilder, private student: StudentServiceService, private router:Router) { }
+  constructor(private student: StudentServiceService, private router:Router) { }
 
   ngOnInit(): void {
-    this.studentForm = this.fb.group({
-      Name: ['', Validators.required],
-      id: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      RollNo: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
-      EmailId: ['', [Validators.required, Validators.email]],
-      PhoneNumber: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]]
+     this.student.studentChanged$
+    .pipe(startWith(null)) // Triggers the subscription immediately on init
+    .subscribe(() => {
+      this.getStudents(); // Fetch and refresh the student list
     });
-    this.getStudents(); // Fetch students on initialization
   }
-
- onSubmit() {
-  if (this.studentForm.valid) {
-    const formData = this.studentForm.value; {
-      // ADD
-      this.student.addStudent(formData).subscribe(() => {
-        console.log('✅ Student added:', formData);
-        this.getStudents();
-        this.studentForm.reset();
-      });
-    }
-  } else {
-    console.warn('⚠️ Form is invalid');
-  }
-}
-
 
   onDelete(id: number) {
     const index = this.students.findIndex(s => s.id === +id);
@@ -74,19 +58,14 @@ export class AppComponent implements OnInit {
 updateStudent(id: number) {
   this.isEditMode = true;
   this.router.navigate(['edit', id]);
+  }
 
-  // const student = this.students.find(s => s.id === id);
-  // if (student) {
-  //   this.isEditMode = true;
-  //   this.currentEditId = id;
-
-  //   this.studentForm.patchValue({
-  //     Name: student.Name,
-  //     id: student.id,
-  //     RollNo: student.RollNo,
-  //     EmailId: student.EmailId,
-  //     PhoneNumber: student.PhoneNumber
-  //   });
+  addStudent() {
+    
+    this.router.navigate(['addstudent']);
+  }
+  trackById(index: number, student: any): number {
+    return student.id;
   }
 }
 
